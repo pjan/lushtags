@@ -79,5 +79,5 @@ appear with all of the tags in your Haskell source file.
 Differences from bitc/lushtags
 ------------------------------
 
-- Complatible with GHC 7.8.4 (probably with 7.8.3 as well)
+- Compatible with GHC 7.10.3 (probably with older versions down to 7.8.3 as well)
 - Outputs record functions.
