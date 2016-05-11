@@ -18,6 +18,7 @@ import Data.List (isPrefixOf, partition)
 import Data.Vector(Vector, fromList)
 import Language.Haskell.Exts.Annotated (parseFileContentsWithMode, ParseMode(..), knownExtensions, ParseResult(ParseOk, ParseFailed))
 import Language.Haskell.Exts.Extension (Language(..), KnownExtension(..), Extension(..))
+import Language.Preprocessor.Cpphs hiding (filename)
 import System.Environment (getArgs, getProgName)
 import System.IO (hPutStrLn, stderr)
 import qualified Data.Text as T (unpack, lines, pack, unlines)
@@ -41,9 +42,12 @@ printTags tags =
     T.putStr $ T.unlines $ map (T.pack . tagToString) tags
 
 processFile :: FilePath -> Bool -> IO [Tag]
-processFile file ignore_parse_error = do
+processFile file ignore_parse_error =
+    let parse f = runCpphs defaultCpphsOptions file f
+    in do
     (fileContents, fileLines) <- loadFile file
-    case parseFileContentsWithMode parseMode fileContents of
+    parsed <- parse fileContents
+    case parseFileContentsWithMode parseMode parsed of
         ParseFailed loc message ->
             if ignore_parse_error then
                 return []
